@@ -1,0 +1,138 @@
+// Version: 1.0.0
+type CartItem__962422454 = {productId : ProductId__160010635; quantity : Nat};
+type Category__951250105 = {#Clothing; #Electronics; #Food};
+type CouponCode__53879871 = Text;
+type Coupon__463451622 =
+  {
+    code : CouponCode__53879871;
+    discountType : DiscountType__183395310;
+    discountValue : Nat;
+    expiryDate : Timestamp__301639476;
+    isActive : Bool;
+    maxUses : Nat;
+    usedCount : Nat
+  };
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type DiscountType__183395310 = {#FixedAmount; #Percentage};
+type ExternalBlob__246066408 = Blob;
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type List__415060402<T> = List__790383201<T>;
+type List__790383201<T> =
+  {
+    var blockIndex : Nat__490723111;
+    var blocks : [var [var ?T]];
+    var elementIndex : Nat__490723111
+  };
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type OrderId__197865225 = Nat;
+type OrderItem__970180480 =
+  {priceAtPurchase : Nat; productId : ProductId__160010635; quantity : Nat};
+type OrderStatus__591380551 =
+  {#Cancelled; #Delivered; #Pending; #Processing; #Shipped};
+type Order__720360493 =
+  {
+    couponCode : ?CouponCode__53879871;
+    createdAt : Timestamp__301639476;
+    discount : Nat;
+    id : OrderId__197865225;
+    items : [OrderItem__970180480];
+    shippingAddress : ShippingAddress__979214524;
+    status : OrderStatus__591380551;
+    total : Nat;
+    updatedAt : Timestamp__301639476;
+    userId : UserId__158757552
+  };
+type ProductId__160010635 = Nat;
+type Product__247116600 =
+  {
+    category : Category__951250105;
+    createdAt : Timestamp__301639476;
+    description : Text;
+    id : ProductId__160010635;
+    image : ExternalBlob__246066408;
+    name : Text;
+    price : Nat;
+    stockCount : Nat
+  };
+type ReviewId__496285678 = Nat;
+type Review__1022111957 =
+  {
+    comment : Text;
+    createdAt : Timestamp__301639476;
+    id : ReviewId__496285678;
+    productId : ProductId__160010635;
+    rating : Nat;
+    userId : UserId__158757552
+  };
+type ShippingAddress__979214524 =
+  {
+    city : Text;
+    country : Text;
+    name : Text;
+    postalCode : Text;
+    state : Text;
+    street : Text
+  };
+type StripeConfiguration__96897619 =
+  {allowedCountries : [Text]; secretKey : Text};
+type Timestamp__301639476 = Int;
+type UserId__158757552 = Principal;
+type UserRole__1054455867 = {#admin; #guest; #user};
+type WishlistItem__577471953 = {productId : ProductId__160010635};
+actor {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1054455867>
+    };
+  stable carts :
+    {
+      var root :
+        Node__46230540<UserId__158757552,
+                        List__415060402<CartItem__962422454>>;
+      var size : Nat__490723111
+    };
+  stable coupons :
+    {
+      var root : Node__46230540<CouponCode__53879871, Coupon__463451622>;
+      var size : Nat__490723111
+    };
+  stable nextOrderId : {var value : Nat};
+  stable nextProductId : {var value : Nat};
+  stable nextReviewId : {var value : Nat};
+  stable orders :
+    {
+      var root : Node__46230540<OrderId__197865225, Order__720360493>;
+      var size : Nat__490723111
+    };
+  stable products :
+    {
+      var root : Node__46230540<ProductId__160010635, Product__247116600>;
+      var size : Nat__490723111
+    };
+  stable reviews :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Review__1022111957]];
+      var elementIndex : Nat__490723111
+    };
+  stable var stripeConfiguration : ?StripeConfiguration__96897619;
+  stable totalUsers : Nat;
+  stable wishlists :
+    {
+      var root :
+        Node__46230540<UserId__158757552,
+                        List__415060402<WishlistItem__577471953>>;
+      var size : Nat__490723111
+    }
+};

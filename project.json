@@ -1,0 +1,30 @@
+{
+  "overview": "QuickShop is a full-featured e-commerce web app with product browsing by category, cart and wishlist management, Stripe checkout, order tracking, a review and rating system, discount coupons, and a protected admin panel for managing products, orders, and coupons.",
+  "features": [
+    "Product catalog with category filtering (Clothing, Electronics, Food) and search",
+    "Product detail pages with images, price, description, and reviews",
+    "Shopping cart and wishlist with persistent state",
+    "Discount coupon codes with percentage or fixed-amount discounts",
+    "Stripe-powered secure checkout with order confirmation",
+    "Order history and status tracking (Pending, Processing, Shipped, Delivered)",
+    "Review and rating system with star ratings and comments",
+    "Admin panel for managing products, orders, and coupons",
+    "User authentication with role-based access (customer and admin roles)",
+    "Email notifications on order creation and status updates",
+    "Mobile-friendly responsive layout"
+  ],
+  "category": "e-commerce",
+  "tags": [
+    "e-commerce",
+    "shopping",
+    "stripe",
+    "admin",
+    "orders",
+    "products",
+    "cart",
+    "wishlist",
+    "reviews",
+    "coupons"
+  ],
+  "last_updated": "2026-04-09T17:47:00.843Z"
+}

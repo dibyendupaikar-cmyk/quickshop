@@ -1,0 +1,236 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type WishlistItem = record {productId: ProductId;};
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserId = principal;
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type Timestamp = int;
+type StripeSessionStatus = 
+ variant {
+   completed: record {
+                response: text;
+                userPrincipal: opt text;
+              };
+   failed: record {error: text;};
+ };
+type StripeConfiguration = 
+ record {
+   allowedCountries: vec text;
+   secretKey: text;
+ };
+type ShoppingItem = 
+ record {
+   currency: text;
+   priceInCents: nat;
+   productDescription: text;
+   productName: text;
+   quantity: nat;
+ };
+type ShippingAddress = 
+ record {
+   city: text;
+   country: text;
+   name: text;
+   postalCode: text;
+   state: text;
+   street: text;
+ };
+type ReviewInput = 
+ record {
+   comment: text;
+   productId: ProductId;
+   rating: nat;
+ };
+type ReviewId = nat;
+type Review = 
+ record {
+   comment: text;
+   createdAt: Timestamp;
+   id: ReviewId;
+   productId: ProductId;
+   rating: nat;
+   userId: UserId;
+ };
+type ProductInput = 
+ record {
+   category: Category;
+   description: text;
+   image: ExternalBlob;
+   name: text;
+   price: nat;
+   stockCount: nat;
+ };
+type ProductId = nat;
+type Product = 
+ record {
+   category: Category;
+   createdAt: Timestamp;
+   description: text;
+   id: ProductId;
+   image: ExternalBlob;
+   name: text;
+   price: nat;
+   stockCount: nat;
+ };
+type OrderStatus = 
+ variant {
+   Cancelled;
+   Delivered;
+   Pending;
+   Processing;
+   Shipped;
+ };
+type OrderResult = 
+ variant {
+   err: text;
+   ok: Order;
+ };
+type OrderItem = 
+ record {
+   priceAtPurchase: nat;
+   productId: ProductId;
+   quantity: nat;
+ };
+type OrderId = nat;
+type Order = 
+ record {
+   couponCode: opt CouponCode;
+   createdAt: Timestamp;
+   discount: nat;
+   id: OrderId;
+   items: vec OrderItem;
+   shippingAddress: ShippingAddress;
+   status: OrderStatus;
+   total: nat;
+   updatedAt: Timestamp;
+   userId: UserId;
+ };
+type ExternalBlob = blob;
+type DiscountType = 
+ variant {
+   FixedAmount;
+   Percentage;
+ };
+type DashboardStats = 
+ record {
+   pendingOrders: nat;
+   totalCoupons: nat;
+   totalOrders: nat;
+   totalProducts: nat;
+   totalRevenue: nat;
+   totalUsers: nat;
+ };
+type CouponInput = 
+ record {
+   code: CouponCode;
+   discountType: DiscountType;
+   discountValue: nat;
+   expiryDate: Timestamp;
+   isActive: bool;
+   maxUses: nat;
+ };
+type CouponCode = text;
+type Coupon = 
+ record {
+   code: CouponCode;
+   discountType: DiscountType;
+   discountValue: nat;
+   expiryDate: Timestamp;
+   isActive: bool;
+   maxUses: nat;
+   usedCount: nat;
+ };
+type Category = 
+ variant {
+   Clothing;
+   Electronics;
+   Food;
+ };
+type CartItem = 
+ record {
+   productId: ProductId;
+   quantity: nat;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  addReview: (input: ReviewInput) -> (Review);
+  addToCart: (productId: ProductId, quantity: nat) -> ();
+  addToWishlist: (productId: ProductId) -> ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  createCheckoutSession: (items: vec ShoppingItem, successUrl: text,
+   cancelUrl: text) -> (text);
+  createCoupon: (input: CouponInput) -> (Coupon);
+  createOrder: (items: vec CartItem, couponCode: opt CouponCode,
+   shippingAddress: ShippingAddress, emailAddress: text) -> (OrderResult);
+  createProduct: (input: ProductInput) -> (Product);
+  deleteCoupon: (code: CouponCode) -> (bool);
+  deleteProduct: (id: ProductId) -> (bool);
+  getAllOrders: () -> (vec Order) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getCart: () -> (vec CartItem) query;
+  getDashboardStats: () -> (DashboardStats) query;
+  getOrder: (id: OrderId) -> (opt Order) query;
+  getOrders: () -> (vec Order) query;
+  getProduct: (id: ProductId) -> (opt Product) query;
+  getProductReviews: (productId: ProductId) -> (vec Review) query;
+  getProducts: (category: opt Category) -> (vec Product) query;
+  getStripeSessionStatus: (sessionId: text) -> (StripeSessionStatus);
+  getWishlist: () -> (vec WishlistItem) query;
+  isCallerAdmin: () -> (bool) query;
+  isStripeConfigured: () -> (bool) query;
+  removeFromCart: (productId: ProductId) -> ();
+  removeFromWishlist: (productId: ProductId) -> ();
+  setStripeConfiguration: (config: StripeConfiguration) -> ();
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  updateCoupon: (code: CouponCode, input: CouponInput) -> (opt Coupon);
+  updateOrderStatus: (id: OrderId, status: OrderStatus, recipientEmail:
+   text) -> (opt Order);
+  updateProduct: (id: ProductId, input: ProductInput) -> (opt Product);
+  validateCoupon: (code: CouponCode, orderTotal: nat) -> (nat) query;
+}
